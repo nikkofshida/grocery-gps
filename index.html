@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#166534">
+  <title>GroceryGPS</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ==================== HOME ==================== -->
+  <div id="screen-home" class="screen active">
+    <div class="home-hero">
+      <div class="home-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+          <circle cx="12" cy="9" r="2.5"/>
+        </svg>
+      </div>
+      <h1 class="home-title">GroceryGPS</h1>
+      <p class="home-subtitle">Navigate your store, not your phone</p>
+    </div>
+
+    <!-- Saved stores -->
+    <div id="home-stores-section">
+      <div class="section-label">Your Stores</div>
+      <div id="home-store-list">
+        <!-- Populated by app.js -->
+      </div>
+    </div>
+
+    <!-- Main actions -->
+    <div class="section-label">Get Started</div>
+    <div class="action-grid">
+      <div class="action-card" onclick="GroceryGPS.app.showScreen('store-finder')">
+        <div class="action-card-icon action-card-icon--green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/>
+          </svg>
+        </div>
+        <div class="action-card-text">
+          <div class="action-card-title">Add Store</div>
+          <div class="action-card-desc">Find nearby</div>
+        </div>
+      </div>
+
+      <div class="action-card" onclick="GroceryGPS.app.showScreen('aisle-scanner')">
+        <div class="action-card-icon action-card-icon--blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5"/><path d="M7 2v20"/><path d="M17 2v20"/><path d="M2 12h20"/><path d="M2 7h5"/><path d="M2 17h5"/><path d="M17 7h5"/><path d="M17 17h5"/>
+          </svg>
+        </div>
+        <div class="action-card-text">
+          <div class="action-card-title">Scan Aisles</div>
+          <div class="action-card-desc">Use camera</div>
+        </div>
+      </div>
+
+      <div class="action-card action-card--full" id="home-start-btn" onclick="GroceryGPS.app.showScreen('list-input')">
+        <div class="action-card-icon action-card-icon--warm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 5H2v7l6.29 6.29a1 1 0 001.42 0l5.58-5.58a1 1 0 000-1.42L9 5z"/><path d="M6 9.01V9"/>
+            <line x1="22" y1="8" x2="16" y2="8"/><line x1="19" y1="5" x2="19" y2="11"/>
+          </svg>
+        </div>
+        <div class="action-card-text">
+          <div class="action-card-title">Start Shopping</div>
+          <div class="action-card-desc">Add items by voice, photo, or paste from Notes</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Import & Settings -->
+    <div class="flex gap-2 mt-4">
+      <button class="btn btn-ghost flex-1" onclick="GroceryGPS.storeEditor.importStoreFromFile()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Import Map
+      </button>
+      <button class="btn btn-ghost" style="width:auto;" onclick="GroceryGPS.app.showScreen('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+        </svg>
+        Settings
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== SETTINGS ==================== -->
+  <div id="screen-settings" class="screen">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="GroceryGPS.app.goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <div class="nav-title">Settings</div>
+    </div>
+
+    <div class="editor-section">
+      <div class="editor-section-title">AI Features</div>
+      <div style="background:var(--clr-surface);border-radius:var(--r-lg);padding:var(--sp-5);border:1px solid var(--clr-border-subtle);">
+        <div class="form-group">
+          <label class="form-label" for="settings-api-key">OpenAI API Key</label>
+          <input type="password" id="settings-api-key" class="form-input"
+            placeholder="sk-..."
+            onfocus="GroceryGPS.settings.onKeyInputFocus(this)">
+          <p class="text-xs text-muted mt-2" id="settings-key-status"></p>
+        </div>
+        <div class="flex gap-2">
+          <button class="btn btn-primary flex-1" style="min-height:40px;font-size:0.9rem;" onclick="GroceryGPS.settings.saveKey()">
+            Save Key
+          </button>
+          <button class="btn btn-ghost" style="width:auto;min-height:40px;font-size:0.85rem;color:var(--clr-danger);" onclick="GroceryGPS.settings.removeKey()">
+            Remove
+          </button>
+        </div>
+      </div>
+      <p class="text-xs text-muted mt-3" style="line-height:1.5;">
+        Your key is stored on this device only. It's sent directly to OpenAI when scanning aisle signs — never to our servers.
+        Get a key at <strong>platform.openai.com/api-keys</strong>.
+      </p>
+    </div>
+  </div>
+
+  <!-- ==================== STORE FINDER ==================== -->
+  <div id="screen-store-finder" class="screen">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="GroceryGPS.app.goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <div class="nav-title">Find Your Store</div>
+    </div>
+
+    <div id="store-finder-content">
+      <!-- Location prompt (initial state) -->
+      <div id="finder-prompt" class="location-prompt">
+        <div class="location-icon-ring">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+          </svg>
+        </div>
+        <h2 class="location-title">Find Nearby Stores</h2>
+        <p class="location-desc">We'll use your location to find grocery stores near you. No typing needed.</p>
+        <button class="btn btn-primary" onclick="GroceryGPS.storeFinder.findNearby()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+            <circle cx="12" cy="9" r="2.5"/>
+          </svg>
+          Use My Location
+        </button>
+        <button class="btn btn-ghost mt-3" onclick="GroceryGPS.storeFinder.showManualSearch()">
+          Or search by name
+        </button>
+      </div>
+
+      <!-- Search bar (shown after "search by name") -->
+      <div id="finder-search" class="hidden">
+        <div class="quick-add-area mb-4">
+          <input type="text" class="quick-add-input" id="store-search-input"
+            placeholder="Search for a store..."
+            oninput="GroceryGPS.storeFinder.onSearchInput(this.value)">
+        </div>
+      </div>
+
+      <!-- Searching state -->
+      <div id="finder-searching" class="hidden">
+        <div class="searching-indicator">
+          <div class="search-dot"></div>
+          <div class="search-dot"></div>
+          <div class="search-dot"></div>
+          <span>Finding stores near you...</span>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="finder-results" class="store-results hidden">
+        <!-- Populated by storeFinder.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== AISLE SCANNER ==================== -->
+  <div id="screen-aisle-scanner" class="screen">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="GroceryGPS.aisleScanner.close()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <div class="nav-title">Scan Aisle Sign</div>
+      <button class="nav-action" id="scanner-gallery-btn" onclick="GroceryGPS.aisleScanner.openGallery()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="scanner-container">
+      <!-- Camera view -->
+      <div class="camera-viewport" id="camera-viewport">
+        <div class="camera-viewport--placeholder" id="camera-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          <span>Tap to open camera</span>
+        </div>
+        <video id="camera-stream" autoplay playsinline style="display:none;"></video>
+        <canvas id="camera-canvas" style="display:none;"></canvas>
+        <div class="scan-frame" id="scan-frame" style="display:none;"></div>
+        <div class="scan-hint" id="scan-hint" style="display:none;">Point at an aisle sign</div>
+      </div>
+
+      <!-- Camera controls -->
+      <div class="camera-controls">
+        <button class="camera-toggle" onclick="GroceryGPS.aisleScanner.openGallery()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+          </svg>
+        </button>
+        <button class="shutter-btn" id="shutter-btn" onclick="GroceryGPS.aisleScanner.capture()"></button>
+        <button class="camera-toggle" onclick="GroceryGPS.aisleScanner.switchCamera()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 19H4a2 2 0 01-2-2V7a2 2 0 012-2h5"/><path d="M13 5h7a2 2 0 012 2v10a2 2 0 01-2 2h-5"/>
+            <polyline points="16 2 19 5 16 8"/><polyline points="8 22 5 19 8 16"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Scanned result (shown after capture) -->
+      <div id="scanner-result" class="scanned-results hidden">
+        <div class="scanned-aisle-header">
+          <div class="scanned-aisle-badge" id="scanned-aisle-num">5</div>
+          <div>
+            <div class="scanned-aisle-title" id="scanned-aisle-title">Aisle 5</div>
+            <div class="scanned-aisle-subtitle">Categories detected from sign</div>
+          </div>
+        </div>
+        <div id="scanned-categories" class="scanned-categories">
+          <!-- Populated by scanner -->
+        </div>
+        <div class="flex gap-2 mt-4">
+          <button class="btn btn-primary" onclick="GroceryGPS.aisleScanner.saveAndNext()">
+            Save & Scan Next
+          </button>
+        </div>
+        <button class="btn btn-ghost mt-1" onclick="GroceryGPS.aisleScanner.saveAndDone()">
+          Done Scanning
+        </button>
+      </div>
+    </div>
+
+    <!-- Hidden file input for gallery -->
+    <input type="file" id="gallery-input" accept="image/*" style="display:none;"
+      onchange="GroceryGPS.aisleScanner.handleGalleryPhoto(this)">
+  </div>
+
+  <!-- ==================== STORE EDITOR ==================== -->
+  <div id="screen-store-editor" class="screen">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="GroceryGPS.app.goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <div class="nav-title">Store Map</div>
+      <button class="nav-action" onclick="GroceryGPS.storeEditor.exportCurrentStore()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Store Info Card -->
+    <div class="editor-section">
+      <div class="form-group">
+        <label class="form-label" for="store-name">Store Name</label>
+        <input type="text" id="store-name" class="form-input"
+          placeholder="e.g., QFC Crown Hill">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="store-address">Address</label>
+        <input type="text" id="store-address" class="form-input"
+          placeholder="e.g., 8501 15th Ave NW, Seattle">
+      </div>
+    </div>
+
+    <!-- Entrance/Exit Diagram -->
+    <div class="editor-section">
+      <div class="editor-section-title">Entrance & Exit</div>
+      <div class="layout-diagram">
+        <div class="layout-inner">
+          <button class="layout-side-btn layout-side-btn--top" id="side-north"
+            onclick="GroceryGPS.storeEditor.toggleSide('north')">N</button>
+          <button class="layout-side-btn layout-side-btn--right" id="side-east"
+            onclick="GroceryGPS.storeEditor.toggleSide('east')">E</button>
+          <button class="layout-side-btn layout-side-btn--bottom" id="side-south"
+            onclick="GroceryGPS.storeEditor.toggleSide('south')">S</button>
+          <button class="layout-side-btn layout-side-btn--left" id="side-west"
+            onclick="GroceryGPS.storeEditor.toggleSide('west')">W</button>
+          <div class="layout-label" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;">
+            <span>Tap a side to set</span>
+            <span style="font-size:0.62rem;">1st tap = entrance, 2nd = exit</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aisles -->
+    <div class="editor-section">
+      <div class="flex items-center justify-between mb-3">
+        <div class="editor-section-title" style="padding:0;margin:0;">Center Aisles</div>
+        <button class="btn btn-ghost" style="width:auto;min-height:auto;padding:4px 12px;font-size:0.8rem;"
+          onclick="GroceryGPS.app.showScreen('aisle-scanner')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px">
+            <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          Scan
+        </button>
+      </div>
+      <div id="aisle-list">
+        <!-- Populated by store-editor.js -->
+      </div>
+      <button class="add-row" onclick="GroceryGPS.storeEditor.addAisle()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Aisle
+      </button>
+    </div>
+
+    <!-- Zones -->
+    <div class="editor-section">
+      <div class="editor-section-title">Perimeter Zones</div>
+      <div id="zone-list">
+        <!-- Populated by store-editor.js -->
+      </div>
+      <button class="add-row" onclick="GroceryGPS.storeEditor.addZone()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Zone
+      </button>
+    </div>
+
+    <!-- Save -->
+    <button class="btn btn-primary" onclick="GroceryGPS.storeEditor.saveStore()">
+      Save Store Map
+    </button>
+    <button id="delete-store-btn" class="btn btn-ghost mt-3" style="color:var(--clr-danger);display:none;"
+      onclick="GroceryGPS.storeEditor.deleteCurrentStore()">
+      Delete This Store
+    </button>
+  </div>
+
+  <!-- ==================== LIST INPUT ==================== -->
+  <div id="screen-list-input" class="screen">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="GroceryGPS.app.goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <div class="nav-title">Shopping List</div>
+      <button class="nav-action" id="list-route-btn" onclick="GroceryGPS.app.showScreen('route')" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Input method selector -->
+    <div class="list-input-methods">
+      <button class="input-method active" id="method-type" onclick="GroceryGPS.listInput.setMethod('type')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M6 8h.01"/><path d="M10 8h.01"/><path d="M14 8h.01"/><path d="M18 8h.01"/>
+          <path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/>
+          <path d="M7 16h10"/>
+        </svg>
+        Type
+      </button>
+      <button class="input-method" id="method-voice" onclick="GroceryGPS.listInput.setMethod('voice')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+          <path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>
+        </svg>
+        Voice
+      </button>
+      <button class="input-method" id="method-photo" onclick="GroceryGPS.listInput.setMethod('photo')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+        Photo
+      </button>
+    </div>
+
+    <!-- Type input area -->
+    <div id="input-area-type">
+      <div class="quick-add-area">
+        <input type="text" class="quick-add-input" id="item-input"
+          placeholder="Add an item..."
+          onkeydown="if(event.key==='Enter'){GroceryGPS.listInput.addItem();event.preventDefault();}">
+        <button class="quick-add-submit" onclick="GroceryGPS.listInput.addItem()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </button>
+      </div>
+      <button class="btn btn-ghost mt-2 text-sm" onclick="GroceryGPS.listInput.showPasteSheet()">
+        Paste from Notes
+      </button>
+    </div>
+
+    <!-- Voice input area -->
+    <div id="input-area-voice" class="hidden">
+      <div class="voice-input-area">
+        <button class="voice-btn" id="voice-record-btn" onclick="GroceryGPS.listInput.toggleVoice()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+            <path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>
+          </svg>
+        </button>
+        <p class="voice-hint" id="voice-hint">Tap to start — say your items</p>
+        <p class="text-xs text-muted">e.g., "Milk, eggs, bread, and bananas"</p>
+      </div>
+    </div>
+
+    <!-- Photo input area -->
+    <div id="input-area-photo" class="hidden">
+      <div class="voice-input-area">
+        <button class="voice-btn" style="background:var(--clr-camera);box-shadow:0 4px 20px rgba(37,99,235,0.3);"
+          onclick="GroceryGPS.listInput.captureListPhoto()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+        </button>
+        <p class="voice-hint">Snap or upload a photo of your list</p>
+        <p class="text-xs text-muted">AI reads handwritten or typed lists</p>
+      </div>
+      <input type="file" id="list-photo-input" accept="image/*"
+        style="display:none;" onchange="GroceryGPS.listInput.handleListPhoto(this)">
+    </div>
+
+    <!-- Current list -->
+    <div id="grocery-list-container">
+      <div class="flex items-center justify-between mt-4 mb-2">
+        <span class="text-xs text-muted" id="list-count">0 items</span>
+        <button class="btn btn-ghost" style="width:auto;min-height:auto;padding:2px 8px;font-size:0.75rem;"
+          id="list-clear-btn" onclick="GroceryGPS.listInput.clearList()" style="display:none;">
+          Clear All
+        </button>
+      </div>
+      <div id="grocery-list" class="list-items">
+        <!-- Populated by listInput.js -->
+      </div>
+    </div>
+
+    <!-- Optimize route button (sticky bottom) -->
+    <div id="list-action-bar" class="hidden" style="position:fixed;bottom:0;left:0;right:0;padding:var(--sp-4) var(--sp-5);padding-bottom:calc(var(--sp-4) + env(safe-area-inset-bottom,0px));background:var(--clr-surface-overlay);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--clr-border-subtle);max-width:430px;margin:0 auto;">
+      <button class="btn btn-primary" onclick="GroceryGPS.app.showScreen('route')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+        Optimize Route
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== ROUTE ==================== -->
+  <div id="screen-route" class="screen">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="GroceryGPS.app.goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <div class="nav-title">Your Route</div>
+      <button class="nav-action" id="route-strategy-btn" onclick="GroceryGPS.routeView.toggleStrategy()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/>
+          <path d="M13 6h3a2 2 0 012 2v7"/><path d="M6 9v12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Strategy indicator -->
+    <div class="route-strategy-bar">
+      <button class="route-strategy-pill active" id="pill-natural" onclick="GroceryGPS.routeView.setStrategy('natural')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+        Natural Flow
+      </button>
+      <button class="route-strategy-pill" id="pill-shortest" onclick="GroceryGPS.routeView.setStrategy('shortest')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+        Shortest Path
+      </button>
+    </div>
+
+    <!-- SVG Map -->
+    <div class="route-map-container">
+      <div id="route-map" class="route-map">
+        <!-- Populated by store-map.js -->
+      </div>
+      <div class="route-map-legend">
+        <span class="route-legend-item"><span class="route-legend-dot" style="background:#16a34a;"></span>Route</span>
+        <span class="route-legend-item"><span class="route-legend-dot" style="background:#16a34a;"></span>Stop</span>
+        <span class="route-legend-item"><span class="route-legend-dot" style="background:#d97706;"></span>Exit</span>
+      </div>
+    </div>
+
+    <!-- Route summary -->
+    <div class="route-summary">
+      <div class="route-summary-stat">
+        <div class="route-summary-number" id="route-stop-count">0</div>
+        <div class="route-summary-label">stops</div>
+      </div>
+      <div class="route-summary-stat">
+        <div class="route-summary-number" id="route-item-count">0</div>
+        <div class="route-summary-label">items</div>
+      </div>
+      <div class="route-summary-stat">
+        <div class="route-summary-number" id="route-strategy-label">Natural</div>
+        <div class="route-summary-label">strategy</div>
+      </div>
+    </div>
+
+    <!-- Ordered stop list -->
+    <div class="section-label" style="margin-top:var(--sp-3);">Your Path</div>
+    <div id="route-stop-list" class="route-stop-list">
+      <!-- Populated by routeView -->
+    </div>
+
+    <!-- Start Shopping CTA -->
+    <div class="route-action-bar">
+      <button class="btn btn-primary" onclick="GroceryGPS.routeView.startShopping()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+        </svg>
+        Start Shopping
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== SHOPPING MODE ==================== -->
+  <div id="screen-shopping" class="screen">
+    <div class="nav-bar">
+      <button class="nav-back" onclick="GroceryGPS.app.goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <div class="nav-title">Shopping</div>
+    </div>
+    <div id="shopping-content">
+      <!-- Populated by shopping-mode.js -->
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom sheet for paste -->
+<div class="bottom-sheet-overlay" id="paste-overlay" onclick="GroceryGPS.listInput.hidePasteSheet()"></div>
+<div class="bottom-sheet" id="paste-sheet">
+  <div class="bottom-sheet-handle"></div>
+  <div class="bottom-sheet-content">
+    <div class="bottom-sheet-title">Paste Your List</div>
+    <p class="text-sm text-secondary mb-3">Paste from Apple Notes — one item per line.</p>
+    <textarea class="form-input" id="paste-textarea" rows="8"
+      placeholder="Milk&#10;Eggs&#10;Bread&#10;Bananas&#10;Chicken breast"
+      style="min-height:160px;resize:none;border-radius:var(--r-md);"></textarea>
+    <button class="btn btn-primary mt-4" onclick="GroceryGPS.listInput.addPastedItems()">
+      Add All Items
+    </button>
+  </div>
+</div>
+
+<!-- Bottom sheet for aisle picker -->
+<div class="bottom-sheet-overlay" id="aisle-picker-overlay" onclick="GroceryGPS.listInput.hideAislePicker()"></div>
+<div class="bottom-sheet" id="aisle-picker-sheet">
+  <div class="bottom-sheet-handle"></div>
+  <div class="bottom-sheet-content">
+    <div class="bottom-sheet-title">Which aisle?</div>
+    <p class="text-sm text-secondary mb-3" id="aisle-picker-item-name"></p>
+    <div id="aisle-picker-options">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script src="js/storage.js"></script>
+<script src="js/categories.js"></script>
+<script src="js/app.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/store-editor.js"></script>
+<script src="js/store-finder.js"></script>
+<script src="js/aisle-scanner.js"></script>
+<script src="js/list-input.js"></script>
+<script src="js/router.js"></script>
+<script src="js/store-map.js"></script>
+<script src="js/route-view.js"></script>
+<script src="js/shopping-mode.js"></script>
+
+</body>
+</html>

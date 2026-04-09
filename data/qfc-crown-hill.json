@@ -1,0 +1,145 @@
+{
+  "id": "qfc-crown-hill",
+  "name": "QFC Crown Hill",
+  "address": "8501 15th Ave NW, Seattle, WA 98117",
+  "updatedAt": "2026-04-03T00:00:00Z",
+  "entrance": { "side": "south", "position": 0.3 },
+  "exit": { "side": "south", "position": 0.7 },
+  "aisles": [
+    {
+      "id": "aisle-1",
+      "number": 1,
+      "label": "Aisle 1",
+      "categories": ["Bread", "Bagels", "Tortillas", "Peanut Butter", "Jelly", "Honey"],
+      "gridRow": 0,
+      "gridCol": 0
+    },
+    {
+      "id": "aisle-2",
+      "number": 2,
+      "label": "Aisle 2",
+      "categories": ["Cereal", "Oatmeal", "Granola", "Breakfast Bars", "Pop-Tarts"],
+      "gridRow": 0,
+      "gridCol": 1
+    },
+    {
+      "id": "aisle-3",
+      "number": 3,
+      "label": "Aisle 3",
+      "categories": ["Canned Vegetables", "Canned Fruit", "Soup", "Broth", "Beans"],
+      "gridRow": 0,
+      "gridCol": 2
+    },
+    {
+      "id": "aisle-4",
+      "number": 4,
+      "label": "Aisle 4",
+      "categories": ["Pasta", "Pasta Sauce", "Rice", "Grains", "International Foods"],
+      "gridRow": 0,
+      "gridCol": 3
+    },
+    {
+      "id": "aisle-5",
+      "number": 5,
+      "label": "Aisle 5",
+      "categories": ["Snacks", "Chips", "Crackers", "Cookies", "Candy"],
+      "gridRow": 0,
+      "gridCol": 4
+    },
+    {
+      "id": "aisle-6",
+      "number": 6,
+      "label": "Aisle 6",
+      "categories": ["Beverages", "Soda", "Juice", "Water", "Coffee", "Tea"],
+      "gridRow": 0,
+      "gridCol": 5
+    },
+    {
+      "id": "aisle-7",
+      "number": 7,
+      "label": "Aisle 7",
+      "categories": ["Condiments", "Salad Dressing", "Oils", "Vinegar", "Spices", "Baking"],
+      "gridRow": 0,
+      "gridCol": 6
+    },
+    {
+      "id": "aisle-8",
+      "number": 8,
+      "label": "Aisle 8",
+      "categories": ["Paper Products", "Cleaning Supplies", "Trash Bags", "Laundry"],
+      "gridRow": 0,
+      "gridCol": 7
+    },
+    {
+      "id": "aisle-9",
+      "number": 9,
+      "label": "Aisle 9",
+      "categories": ["Health", "Medicine", "Vitamins", "Personal Care", "Baby"],
+      "gridRow": 0,
+      "gridCol": 8
+    },
+    {
+      "id": "aisle-10",
+      "number": 10,
+      "label": "Aisle 10",
+      "categories": ["Frozen Meals", "Frozen Vegetables", "Frozen Pizza", "Ice Cream"],
+      "gridRow": 0,
+      "gridCol": 9
+    }
+  ],
+  "zones": [
+    {
+      "id": "zone-produce",
+      "name": "Produce",
+      "side": "east",
+      "position": 0.0,
+      "span": 1.0,
+      "categories": ["Fruits", "Vegetables", "Herbs", "Salad Mix", "Fresh Juice", "Fresh Cut Fruit"]
+    },
+    {
+      "id": "zone-deli",
+      "name": "Deli",
+      "side": "north",
+      "position": 0.0,
+      "span": 0.33,
+      "categories": ["Deli Meats", "Prepared Foods", "Rotisserie Chicken", "Soup Bar", "Salad Bar"]
+    },
+    {
+      "id": "zone-bakery",
+      "name": "Bakery",
+      "side": "north",
+      "position": 0.33,
+      "span": 0.33,
+      "categories": ["Fresh Bread", "Cakes", "Donuts", "Muffins", "Pastries", "Pies"]
+    },
+    {
+      "id": "zone-meat-seafood",
+      "name": "Meat & Seafood",
+      "side": "north",
+      "position": 0.66,
+      "span": 0.34,
+      "categories": ["Beef", "Chicken", "Pork", "Ground Meat", "Seafood", "Fish", "Sausage"]
+    },
+    {
+      "id": "zone-dairy",
+      "name": "Dairy",
+      "side": "west",
+      "position": 0.0,
+      "span": 0.5,
+      "categories": ["Milk", "Cheese", "Yogurt", "Eggs", "Butter", "Cream", "Sour Cream"]
+    },
+    {
+      "id": "zone-frozen",
+      "name": "Frozen",
+      "side": "west",
+      "position": 0.5,
+      "span": 0.5,
+      "categories": ["Frozen Entrees", "Frozen Fruit", "Frozen Breakfast", "Ice Cream Novelties"]
+    }
+  ],
+  "layout": {
+    "aisleRows": 1,
+    "aisleCols": 10,
+    "orientation": "horizontal"
+  }
+}

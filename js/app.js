@@ -38,12 +38,20 @@ GroceryGPS.app = (function () {
 
   function getCurrentScreen() { return currentScreen; }
 
+  function sortStoresByRecent(stores) {
+    return stores.slice().sort(function (a, b) {
+      var tA = a.lastUsedAt ? new Date(a.lastUsedAt).getTime() : 0;
+      var tB = b.lastUsedAt ? new Date(b.lastUsedAt).getTime() : 0;
+      return tB - tA;
+    });
+  }
+
   function renderHomeScreen() {
     var listEl = document.getElementById('home-store-list');
     var storesSection = document.getElementById('home-stores-section');
     if (!listEl) return;
 
-    var stores = GroceryGPS.storage.listStores();
+    var stores = sortStoresByRecent(GroceryGPS.storage.listStores());
 
     if (stores.length === 0) {
       storesSection.classList.add('hidden');

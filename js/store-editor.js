@@ -40,6 +40,7 @@ GroceryGPS.storeEditor = (function () {
     renderAisles();
     renderZones();
     renderLayoutDiagram();
+    renderPreviewMap();
     updateDeleteButton();
   }
 
@@ -66,6 +67,7 @@ GroceryGPS.storeEditor = (function () {
     renderAisles();
     renderZones();
     renderLayoutDiagram();
+    renderPreviewMap();
     updateDeleteButton();
   }
 
@@ -98,6 +100,7 @@ GroceryGPS.storeEditor = (function () {
     }
 
     renderLayoutDiagram();
+    renderPreviewMap();
   }
 
   function renderLayoutDiagram() {
@@ -212,21 +215,65 @@ GroceryGPS.storeEditor = (function () {
       ? Math.max.apply(null, aisles.map(function(a){return a.number;})) + 1 : 1;
     aisles.push({ number: nextNum, categories: '' });
     renderAisles();
+    renderPreviewMap();
   }
 
-  function removeAisle(index) { aisles.splice(index, 1); renderAisles(); }
+  function removeAisle(index) { aisles.splice(index, 1); renderAisles(); renderPreviewMap(); }
 
   function updateAisleCategories(index, categories) {
     if (aisles[index]) aisles[index].categories = categories;
     renderAisles();
+    renderPreviewMap();
   }
 
   function addZone() {
     zones.push({ name: '', side: 'north', categories: '' });
     renderZones();
+    renderPreviewMap();
   }
 
-  function removeZone(index) { zones.splice(index, 1); renderZones(); }
+  function removeZone(index) { zones.splice(index, 1); renderZones(); renderPreviewMap(); }
+
+  // --- Live preview map ---
+  // Builds an in-memory storeData object and renders via store-map.js
+  function renderPreviewMap() {
+    var container = document.getElementById('editor-preview-map');
+    if (!container || !GroceryGPS.storeMap) return;
+
+    var previewData = {
+      id: 'preview',
+      name: 'Preview',
+      entrance: { side: entranceSide || 'south', position: 0.2 },
+      exit: { side: exitSide || 'south', position: 0.8 },
+      aisles: aisles.map(function (a, i) {
+        var cats = (a.categories || '').split(',').map(function(c){return c.trim();}).filter(Boolean);
+        return {
+          id: 'aisle-' + a.number,
+          number: a.number,
+          label: 'Aisle ' + a.number,
+          categories: cats,
+          gridRow: 0,
+          gridCol: i
+        };
+      }),
+      zones: zones.map(function (z, i) {
+        var cats = (z.categories || '').split(',').map(function(c){return c.trim();}).filter(Boolean);
+        return {
+          id: 'zone-' + i,
+          name: z.name || 'Zone',
+          label: z.name || 'Zone',
+          side: z.side || 'north',
+          position: 0.5,
+          span: 0.5,
+          categories: cats
+        };
+      }),
+      layout: { aisleRows: 1, aisleCols: aisles.length, orientation: 'horizontal' }
+    };
+
+    // Render without a route (no stops highlighted)
+    GroceryGPS.storeMap.render(container, previewData, { stops: [] });
+  }
 
   function saveStore() {
     var nameInput = document.getElementById('store-name');

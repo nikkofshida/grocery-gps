@@ -86,6 +86,12 @@ GroceryGPS.storage = (function () {
 
   function setActiveStoreId(storeId) {
     localStorage.setItem(KEYS.ACTIVE_STORE, storeId);
+    // Track last-used timestamp for prioritization
+    var store = loadStore(storeId);
+    if (store) {
+      store.lastUsedAt = new Date().toISOString();
+      saveStore(store);
+    }
   }
 
   // Export a store as a JSON string (for sharing)

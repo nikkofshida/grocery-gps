@@ -141,21 +141,23 @@
     </div>
 
     <div id="store-finder-content">
-      <!-- Always-visible search bar -->
-      <div class="quick-add-area mb-3">
+      <!-- Search bar with inline location button -->
+      <div class="finder-search-row mb-3">
         <input type="text" class="quick-add-input" id="store-search-input"
           placeholder="Search for a store..."
           oninput="GroceryGPS.storeFinder.onSearchInput(this.value)">
+        <button class="finder-loc-btn" title="Use my location"
+          onclick="GroceryGPS.storeFinder.findNearby()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="2" x2="12" y2="4"/>
+            <line x1="12" y1="20" x2="12" y2="22"/>
+            <line x1="2" y1="12" x2="4" y2="12"/>
+            <line x1="20" y1="12" x2="22" y2="12"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
       </div>
-
-      <!-- Use location button -->
-      <button class="btn btn-secondary mb-4" style="width:100%;" onclick="GroceryGPS.storeFinder.findNearby()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-          <circle cx="12" cy="9" r="2.5"/>
-        </svg>
-        Use My Location
-      </button>
 
       <!-- Searching state -->
       <div id="finder-searching" class="hidden">
@@ -307,6 +309,13 @@
       </div>
       <p id="layout-hint" class="text-xs text-muted text-center" style="margin-top:10px;">Tap a side to set entrance, tap again for exit</p>
       <p class="text-xs text-muted text-center" style="margin-top:4px;opacity:0.7;">Same side for both? Tap it twice.</p>
+    </div>
+
+    <!-- Live Preview Map -->
+    <div class="editor-section">
+      <div class="editor-section-title">Store Map Preview</div>
+      <div id="editor-preview-map" class="editor-preview-map"></div>
+      <p class="text-xs text-muted text-center" style="margin-top:8px;opacity:0.7;">Updates live as you add aisles, zones, and set entrance/exit</p>
     </div>
 
     <!-- Aisles -->

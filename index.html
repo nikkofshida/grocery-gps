@@ -141,35 +141,21 @@
     </div>
 
     <div id="store-finder-content">
-      <!-- Location prompt (initial state) -->
-      <div id="finder-prompt" class="location-prompt">
-        <div class="location-icon-ring">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="3 11 22 2 13 21 11 13 3 11"/>
-          </svg>
-        </div>
-        <h2 class="location-title">Find Nearby Stores</h2>
-        <p class="location-desc">We'll use your location to find grocery stores near you. No typing needed.</p>
-        <button class="btn btn-primary" onclick="GroceryGPS.storeFinder.findNearby()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-            <circle cx="12" cy="9" r="2.5"/>
-          </svg>
-          Use My Location
-        </button>
-        <button class="btn btn-ghost mt-3" onclick="GroceryGPS.storeFinder.showManualSearch()">
-          Or search by name
-        </button>
+      <!-- Always-visible search bar -->
+      <div class="quick-add-area mb-3">
+        <input type="text" class="quick-add-input" id="store-search-input"
+          placeholder="Search for a store..."
+          oninput="GroceryGPS.storeFinder.onSearchInput(this.value)">
       </div>
 
-      <!-- Search bar (shown after "search by name") -->
-      <div id="finder-search" class="hidden">
-        <div class="quick-add-area mb-4">
-          <input type="text" class="quick-add-input" id="store-search-input"
-            placeholder="Search for a store..."
-            oninput="GroceryGPS.storeFinder.onSearchInput(this.value)">
-        </div>
-      </div>
+      <!-- Use location button -->
+      <button class="btn btn-secondary mb-4" style="width:100%;" onclick="GroceryGPS.storeFinder.findNearby()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+          <circle cx="12" cy="9" r="2.5"/>
+        </svg>
+        Use My Location
+      </button>
 
       <!-- Searching state -->
       <div id="finder-searching" class="hidden">
@@ -181,8 +167,13 @@
         </div>
       </div>
 
+      <!-- Create new store manually -->
+      <button class="btn btn-ghost mb-3" style="width:100%;" onclick="GroceryGPS.storeFinder.createManualStore()">
+        + Add a store manually
+      </button>
+
       <!-- Results -->
-      <div id="finder-results" class="store-results hidden">
+      <div id="finder-results" class="store-results">
         <!-- Populated by storeFinder.js -->
       </div>
     </div>
@@ -307,12 +298,15 @@
             onclick="GroceryGPS.storeEditor.toggleSide('south')">S</button>
           <button class="layout-side-btn layout-side-btn--left" id="side-west"
             onclick="GroceryGPS.storeEditor.toggleSide('west')">W</button>
-          <div class="layout-label" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;">
-            <span>Tap a side to set</span>
-            <span style="font-size:0.62rem;">1st tap = entrance, 2nd = exit</span>
+          <div class="layout-label" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;opacity:0.35;">
+              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+            </svg>
           </div>
         </div>
       </div>
+      <p id="layout-hint" class="text-xs text-muted text-center" style="margin-top:10px;">Tap a side to set entrance, tap again for exit</p>
+      <p class="text-xs text-muted text-center" style="margin-top:4px;opacity:0.7;">Same side for both? Tap it twice.</p>
     </div>
 
     <!-- Aisles -->

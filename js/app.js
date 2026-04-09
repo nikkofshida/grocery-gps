@@ -57,30 +57,26 @@ GroceryGPS.app = (function () {
       var aisleCount = (store.aisles || []).length;
       var zoneCount = (store.zones || []).length;
       html +=
-        '<div class="store-card" onclick="GroceryGPS.app.selectStore(\'' + store.id + '\')">' +
-          '<div class="store-card-icon">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-              '<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>' +
-              '<polyline points="9 22 9 12 15 12 15 22"/>' +
-            '</svg>' +
-          '</div>' +
-          '<div class="store-card-info">' +
-            '<div class="store-card-name">' + escapeHtml(store.name) + '</div>' +
-            '<div class="store-card-meta">' + aisleCount + ' aisles, ' + zoneCount + ' zones</div>' +
-          '</div>' +
-          '<div class="store-card-actions">' +
-            '<button class="nav-action" onclick="event.stopPropagation();GroceryGPS.app.editStore(\'' + store.id + '\')" style="width:36px;height:36px;">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">' +
-                '<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>' +
-                '<path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>' +
+        '<div class="store-card">' +
+          '<div class="store-card-main" onclick="GroceryGPS.app.selectStore(\'' + store.id + '\')">' +
+            '<div class="store-card-icon">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>' +
+                '<polyline points="9 22 9 12 15 12 15 22"/>' +
               '</svg>' +
-            '</button>' +
+            '</div>' +
+            '<div class="store-card-info">' +
+              '<div class="store-card-name">' + escapeHtml(store.name) + '</div>' +
+              '<div class="store-card-meta">' + aisleCount + ' aisles · ' + zoneCount + ' zones</div>' +
+            '</div>' +
           '</div>' +
-          '<div class="store-card-arrow">' +
+          '<button class="store-card-edit" onclick="GroceryGPS.app.editStore(\'' + store.id + '\')">' +
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-              '<polyline points="9 18 15 12 9 6"/>' +
+              '<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>' +
+              '<path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>' +
             '</svg>' +
-          '</div>' +
+            '<span>Edit Map</span>' +
+          '</button>' +
         '</div>';
     });
 

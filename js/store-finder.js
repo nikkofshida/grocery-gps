@@ -11,16 +11,43 @@ GroceryGPS.storeFinder = (function () {
   var userLat = null;
   var userLng = null;
   var foundStores = [];
+  var allStores = [];  // Full catalog for search
+
+  // Curated list of Seattle-area stores (used for search even without location)
+  var STORE_CATALOG = [
+    { name: 'QFC Crown Hill', address: '8501 15th Ave NW, Seattle, WA 98117', lat: 47.6935, lng: -122.3555, hasPrebuiltMap: true },
+    { name: 'QFC Fremont', address: '800 N 34th St, Seattle, WA 98103', lat: 47.6505, lng: -122.3467 },
+    { name: 'QFC University Village', address: '2746 NE 45th St, Seattle, WA 98105', lat: 47.6636, lng: -122.2990 },
+    { name: 'Safeway Ballard', address: '1423 NW Market St, Seattle, WA 98107', lat: 47.6688, lng: -122.3783 },
+    { name: 'Safeway Greenwood', address: '8340 15th Ave NW, Seattle, WA 98117', lat: 47.6920, lng: -122.3555 },
+    { name: 'Safeway Queen Anne', address: '516 1st Ave W, Seattle, WA 98119', lat: 47.6242, lng: -122.3569 },
+    { name: 'Fred Meyer Ballard', address: '915 NW 45th St, Seattle, WA 98107', lat: 47.6617, lng: -122.3702 },
+    { name: 'Fred Meyer Greenwood', address: '100 NW 85th St, Seattle, WA 98117', lat: 47.6924, lng: -122.3642 },
+    { name: 'Trader Joe\'s Ballard', address: '4609 14th Ave NW, Seattle, WA 98107', lat: 47.6638, lng: -122.3729 },
+    { name: 'Trader Joe\'s Capitol Hill', address: '1700 Madison St, Seattle, WA 98104', lat: 47.6110, lng: -122.3225 },
+    { name: 'Trader Joe\'s University District', address: '4555 Roosevelt Way NE, Seattle, WA 98105', lat: 47.6612, lng: -122.3173 },
+    { name: 'Whole Foods Fremont', address: '600 N 34th St, Seattle, WA 98103', lat: 47.6503, lng: -122.3500 },
+    { name: 'Whole Foods Roosevelt', address: '1026 NE 64th St, Seattle, WA 98115', lat: 47.6745, lng: -122.3197 },
+    { name: 'Whole Foods Westlake', address: '2210 Westlake Ave, Seattle, WA 98121', lat: 47.6155, lng: -122.3401 },
+    { name: 'Grocery Outlet Ballard', address: '5440 Leary Ave NW, Seattle, WA 98107', lat: 47.6652, lng: -122.3813 },
+    { name: 'PCC Fremont', address: '600 N 34th St, Seattle, WA 98103', lat: 47.6502, lng: -122.3492 },
+    { name: 'PCC Ballard', address: '1400 NW 56th St, Seattle, WA 98107', lat: 47.6690, lng: -122.3763 },
+    { name: 'Metropolitan Market Queen Anne', address: '1908 Queen Anne Ave N, Seattle, WA 98109', lat: 47.6375, lng: -122.3569 },
+    { name: 'Metropolitan Market Magnolia', address: '3830 34th Ave W, Seattle, WA 98199', lat: 47.6487, lng: -122.3968 },
+    { name: 'Costco Shoreline', address: '1175 N 205th St, Shoreline, WA 98133', lat: 47.7685, lng: -122.3395 },
+    { name: 'Target Ballard', address: '1448 NW Market St, Seattle, WA 98107', lat: 47.6688, lng: -122.3787 }
+  ];
 
   // =====================
   //  FIND NEARBY
   // =====================
 
   function findNearby() {
-    showSearching();
+    show('finder-searching');
 
     if (!navigator.geolocation) {
-      showError('Geolocation is not supported by your browser.');
+      hide('finder-searching');
+      alert('Geolocation is not supported by your browser.');
       return;
     }
 
@@ -28,26 +55,28 @@ GroceryGPS.storeFinder = (function () {
       function (position) {
         userLat = position.coords.latitude;
         userLng = position.coords.longitude;
+        hide('finder-searching');
         searchNearbyStores(userLat, userLng);
       },
       function (error) {
+        hide('finder-searching');
         var msg = 'Could not get your location. ';
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            msg += 'Location access was denied.';
+            msg += 'Check Safari location permission in Settings.';
             break;
           case error.POSITION_UNAVAILABLE:
-            msg += 'Location information is unavailable.';
+            msg += 'Location unavailable.';
             break;
           case error.TIMEOUT:
-            msg += 'Location request timed out.';
+            msg += 'Request timed out.';
             break;
           default:
-            msg += 'An unknown error occurred.';
+            msg += 'Unknown error.';
         }
-        showError(msg);
-        showManualSearch();
-      }
+        alert(msg);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
   }
 
@@ -57,112 +86,92 @@ GroceryGPS.storeFinder = (function () {
    * with real Google Maps results when available.
    */
   function searchNearbyStores(lat, lng) {
-    // For MVP, we use a curated list of Seattle-area grocery stores
-    // plus the user's saved stores. In production, this would hit
-    // the Google Maps Places API directly.
-
-    var results = [];
-
-    // Add QFC Crown Hill if user is in Seattle area
-    var distToQFC = haversineDistance(lat, lng, 47.6935, -122.3555);
-    results.push({
-      name: 'QFC Crown Hill',
-      address: '8501 15th Ave NW, Seattle, WA 98117',
-      lat: 47.6935,
-      lng: -122.3555,
-      distance: distToQFC,
-      hasPrebuiltMap: true
-    });
-
-    // Add more known stores in the area
-    var knownStores = [
-      { name: 'QFC Fremont', address: '800 N 34th St, Seattle, WA 98103', lat: 47.6505, lng: -122.3467 },
-      { name: 'Safeway Ballard', address: '1423 NW Market St, Seattle, WA 98107', lat: 47.6688, lng: -122.3783 },
-      { name: 'Fred Meyer Ballard', address: '915 NW 45th St, Seattle, WA 98107', lat: 47.6617, lng: -122.3702 },
-      { name: 'Trader Joe\'s Ballard', address: '4649 14th Ave NW, Seattle, WA 98107', lat: 47.6638, lng: -122.3729 },
-      { name: 'Whole Foods Fremont', address: '600 N 34th St, Seattle, WA 98103', lat: 47.6503, lng: -122.3500 },
-      { name: 'Grocery Outlet Ballard', address: '5440 Leary Ave NW, Seattle, WA 98107', lat: 47.6652, lng: -122.3813 },
-      { name: 'PCC Fremont', address: '600 N 34th St, Seattle, WA 98103', lat: 47.6502, lng: -122.3492 },
-      { name: 'Safeway Greenwood', address: '8340 15th Ave NW, Seattle, WA 98117', lat: 47.6920, lng: -122.3555 },
-      { name: 'Metropolitan Market', address: '1908 Queen Anne Ave N, Seattle, WA 98109', lat: 47.6375, lng: -122.3569 }
-    ];
-
-    knownStores.forEach(function (s) {
-      var dist = haversineDistance(lat, lng, s.lat, s.lng);
-      results.push({
+    var results = STORE_CATALOG.map(function (s) {
+      return {
         name: s.name,
         address: s.address,
         lat: s.lat,
         lng: s.lng,
-        distance: dist,
-        hasPrebuiltMap: false
-      });
+        distance: haversineDistance(lat, lng, s.lat, s.lng),
+        hasPrebuiltMap: !!s.hasPrebuiltMap
+      };
     });
 
-    // Sort by distance
     results.sort(function (a, b) { return a.distance - b.distance; });
-
-    // Only show stores within 15 km
-    foundStores = results.filter(function (s) { return s.distance < 15; });
-
-    showResults();
+    foundStores = results.filter(function (s) { return s.distance < 25; });
+    allStores = foundStores;
+    renderResults();
   }
 
 
   // =====================
-  //  MANUAL SEARCH
+  //  INIT / SEARCH
   // =====================
 
-  function showManualSearch() {
-    hide('finder-prompt');
-    hide('finder-searching');
-    show('finder-search');
-    show('finder-results');
+  function initFinder() {
+    // Seed allStores with the catalog so search works even before location
+    allStores = STORE_CATALOG.map(function (s) {
+      return {
+        name: s.name,
+        address: s.address,
+        lat: s.lat,
+        lng: s.lng,
+        distance: null,
+        hasPrebuiltMap: !!s.hasPrebuiltMap
+      };
+    });
+    foundStores = allStores;
 
     var input = document.getElementById('store-search-input');
-    if (input) {
-      input.value = '';
-      setTimeout(function () { input.focus(); }, 300);
-    }
+    if (input) input.value = '';
 
-    // Show all saved stores initially
-    renderSavedStores();
+    renderResults();
   }
 
   function onSearchInput(value) {
     var query = value.toLowerCase().trim();
+    var source = allStores.length > 0 ? allStores : foundStores;
+
     if (!query) {
-      renderSavedStores();
+      renderResults();
       return;
     }
 
-    // Filter found stores by query
-    var matching = foundStores.filter(function (s) {
+    var matching = source.filter(function (s) {
       return s.name.toLowerCase().indexOf(query) !== -1 ||
-             s.address.toLowerCase().indexOf(query) !== -1;
+             (s.address || '').toLowerCase().indexOf(query) !== -1;
     });
 
+    // Update foundStores so selectStore indexes match what's shown
+    foundStores = matching;
     renderStoreResults(matching);
   }
 
-  function renderSavedStores() {
-    var saved = GroceryGPS.storage.listStores();
-    if (saved.length === 0 && foundStores.length === 0) {
-      var el = document.getElementById('finder-results');
-      if (el) {
-        el.innerHTML =
-          '<div class="empty-state" style="padding:20px 0;">' +
-            '<div class="empty-state-desc">No stores found. Tap "Use My Location" or search for a store name.</div>' +
-          '</div>';
-      }
-      return;
-    }
+  function renderResults() {
+    foundStores = allStores;
+    renderStoreResults(allStores);
+  }
 
-    var results = foundStores.length > 0 ? foundStores : saved.map(function (s) {
-      return { name: s.name, address: s.address || '', distance: null, hasPrebuiltMap: true };
-    });
+  function createManualStore() {
+    var name = prompt('Store name:');
+    if (!name || !name.trim()) return;
+    var address = prompt('Store address (optional):') || '';
 
-    renderStoreResults(results);
+    var newStore = {
+      id: GroceryGPS.storage.generateId('store'),
+      name: name.trim(),
+      address: address.trim(),
+      entrance: { side: 'south', position: 0.3 },
+      exit: { side: 'south', position: 0.7 },
+      aisles: [],
+      zones: [],
+      layout: { aisleRows: 1, aisleCols: 0, orientation: 'horizontal' }
+    };
+
+    GroceryGPS.storage.saveStore(newStore);
+    GroceryGPS.storage.setActiveStoreId(newStore.id);
+    GroceryGPS.storeEditor.loadStoreForEditing(newStore.id);
+    GroceryGPS.app.showScreen('store-editor');
   }
 
 
@@ -230,25 +239,7 @@ GroceryGPS.storeFinder = (function () {
   //  UI HELPERS
   // =====================
 
-  function showSearching() {
-    hide('finder-prompt');
-    hide('finder-search');
-    hide('finder-results');
-    show('finder-searching');
-  }
-
-  function showResults() {
-    hide('finder-prompt');
-    hide('finder-searching');
-    show('finder-results');
-    renderStoreResults(foundStores);
-  }
-
-  function showError(msg) {
-    hide('finder-searching');
-    show('finder-prompt');
-    alert(msg);
-  }
+  // (screen is always in results mode now; init seeds allStores)
 
   function renderStoreResults(stores) {
     var el = document.getElementById('finder-results');
@@ -344,11 +335,19 @@ GroceryGPS.storeFinder = (function () {
   });
 
 
+  // Initialize when screen opens
+  document.addEventListener('screenchange', function (e) {
+    if (e.detail.screen === 'store-finder') {
+      initFinder();
+    }
+  });
+
   return {
     findNearby: findNearby,
-    showManualSearch: showManualSearch,
+    initFinder: initFinder,
     onSearchInput: onSearchInput,
     selectStore: selectStore,
+    createManualStore: createManualStore,
     loadPrebuiltStore: loadPrebuiltStore
   };
 

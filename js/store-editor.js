@@ -70,23 +70,33 @@ GroceryGPS.storeEditor = (function () {
   }
 
   // --- Layout Diagram (visual entrance/exit selector) ---
+  // Behavior: tap cycles a side through states: off → entrance → exit → both → off
+  // Entrance and exit CAN be on the same side (common in real stores).
   function toggleSide(side) {
-    if (entranceSide === side) {
+    var isEntrance = entranceSide === side;
+    var isExit = exitSide === side;
+
+    if (!isEntrance && !isExit) {
+      // Off → Entrance
+      if (!entranceSide) {
+        entranceSide = side;
+      } else if (!exitSide) {
+        exitSide = side;
+      } else {
+        // Both already assigned elsewhere — move entrance here
+        entranceSide = side;
+      }
+    } else if (isEntrance && !isExit) {
+      // Entrance only → also Exit (both on same side)
+      exitSide = side;
+    } else if (isEntrance && isExit) {
+      // Both → Exit only
       entranceSide = null;
-      sideClickCount = exitSide ? 1 : 0;
-    } else if (exitSide === side) {
+    } else if (!isEntrance && isExit) {
+      // Exit only → Off
       exitSide = null;
-      sideClickCount = entranceSide ? 1 : 0;
-    } else if (!entranceSide) {
-      entranceSide = side;
-      sideClickCount++;
-    } else if (!exitSide) {
-      exitSide = side;
-      sideClickCount++;
-    } else {
-      // Both set — replace exit
-      exitSide = side;
     }
+
     renderLayoutDiagram();
   }
 
@@ -97,14 +107,38 @@ GroceryGPS.storeEditor = (function () {
       if (!btn) return;
       btn.className = 'layout-side-btn layout-side-btn--' +
         (side === 'north' ? 'top' : side === 'south' ? 'bottom' : side);
-      if (side === entranceSide) btn.classList.add('entrance');
-      if (side === exitSide) btn.classList.add('exit');
 
-      var label = side.charAt(0).toUpperCase();
-      if (side === entranceSide) label = 'IN';
-      if (side === exitSide) label = 'OUT';
-      btn.textContent = label;
+      var isEntrance = side === entranceSide;
+      var isExit = side === exitSide;
+
+      if (isEntrance && isExit) {
+        btn.classList.add('entrance');
+        btn.classList.add('exit');
+        btn.textContent = 'IN/OUT';
+      } else if (isEntrance) {
+        btn.classList.add('entrance');
+        btn.textContent = 'IN';
+      } else if (isExit) {
+        btn.classList.add('exit');
+        btn.textContent = 'OUT';
+      } else {
+        btn.textContent = side.charAt(0).toUpperCase();
+      }
     });
+
+    // Update hint text below diagram
+    var hint = document.getElementById('layout-hint');
+    if (hint) {
+      if (!entranceSide && !exitSide) {
+        hint.textContent = 'Tap a side to set entrance, tap again for exit';
+      } else if (entranceSide && !exitSide) {
+        hint.textContent = 'Now tap where you exit (can be same side)';
+      } else if (entranceSide === exitSide) {
+        hint.textContent = 'Entrance and exit are both on ' + entranceSide;
+      } else {
+        hint.textContent = 'Enter ' + entranceSide + ', exit ' + exitSide;
+      }
+    }
   }
 
   // --- Aisle rendering (compact rows with chips) ---

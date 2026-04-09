@@ -136,6 +136,9 @@ body {
   display: none;
   min-height: 100dvh;
   padding: var(--sp-5);
+  padding-top: calc(var(--sp-5) + env(safe-area-inset-top, 0px));
+  padding-left: calc(var(--sp-5) + env(safe-area-inset-left, 0px));
+  padding-right: calc(var(--sp-5) + env(safe-area-inset-right, 0px));
   padding-bottom: calc(var(--sp-16) + env(safe-area-inset-bottom, 0px));
 }
 
@@ -260,20 +263,45 @@ body {
 /* Store cards on home */
 .store-card {
   display: flex;
-  align-items: center;
-  gap: var(--sp-4);
-  padding: var(--sp-4) var(--sp-5);
+  flex-direction: column;
   background: var(--clr-surface);
   border-radius: var(--r-lg);
   margin-bottom: var(--sp-3);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform 0.15s, box-shadow 0.15s;
+  overflow: hidden;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--clr-border-subtle);
 }
 
-.store-card:active { transform: scale(0.98); }
+.store-card-main {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+.store-card-main:active { background: var(--clr-surface-dim); }
+
+.store-card-edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--clr-surface-dim);
+  border: none;
+  border-top: 1px solid var(--clr-border-subtle);
+  color: var(--clr-text);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+.store-card-edit:active { background: var(--clr-border); }
+.store-card-edit svg { width: 15px; height: 15px; opacity: 0.75; }
 
 .store-card-icon {
   width: 48px;

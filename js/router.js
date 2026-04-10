@@ -191,7 +191,11 @@ GroceryGPS.router = (function () {
         var xRatio = totalAisles > 1
           ? 0.15 + (aisle.gridCol / (totalAisles - 1)) * 0.7
           : 0.5;
-        stop.position = { x: xRatio, y: 0.5 };
+        // Place the stop at the bottom of the aisle bar (visually touching
+        // it). The route renderer will drop down to the walkway (y=0.95)
+        // between stops, creating right-angle paths that treat aisles as
+        // barriers — just like streets on Google Maps.
+        stop.position = { x: xRatio, y: 0.85 };
       } else {
         stop.position = { x: 0.5, y: 0.5 };
       }
@@ -213,7 +217,7 @@ GroceryGPS.router = (function () {
     var r = ratio || 0.5;
     switch (side) {
       case 'north': return { x: 0.15 + r * 0.7, y: 0.08 };
-      case 'south': return { x: 0.15 + r * 0.7, y: 0.92 };
+      case 'south': return { x: 0.15 + r * 0.7, y: 0.95 };
       case 'east':  return { x: 0.92, y: 0.15 + r * 0.7 };
       case 'west':  return { x: 0.08, y: 0.15 + r * 0.7 };
       default:      return { x: 0.5, y: 0.92 };

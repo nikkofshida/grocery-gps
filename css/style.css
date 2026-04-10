@@ -2106,3 +2106,51 @@ body {
     padding-bottom: calc(var(--sp-16) + env(safe-area-inset-bottom));
   }
 }
+
+/* Autocomplete suggestions — vertical dropdown list */
+.item-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 4px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+.item-suggestion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--clr-border);
+  color: var(--clr-text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.item-suggestion:last-child { border-bottom: none; }
+.item-suggestion:active {
+  background: var(--clr-border);
+}
+.item-suggestion .suggestion-plus {
+  color: var(--clr-accent);
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* Editable location pill — every item is now tap-to-correct */
+.list-item-location--editable {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+}
+.list-item-location--editable:active { opacity: 0.6; }

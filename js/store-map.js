@@ -185,9 +185,28 @@ GroceryGPS.storeMap = (function () {
       'Frozen': '#8b5cf6'
     };
 
+    // Auto-distribute zones evenly along each side so they never overlap.
+    var bySide = {};
+    zones.forEach(function (z) {
+      if (!bySide[z.side]) bySide[z.side] = [];
+      bySide[z.side].push(z);
+    });
+    Object.keys(bySide).forEach(function (side) {
+      var group = bySide[side];
+      var span = 1.0 / group.length;
+      group.forEach(function (z, i) {
+        z._renderPos = i * span;
+        z._renderSpan = span;
+      });
+    });
+
     zones.forEach(function (zone) {
       var color = colors[zone.name] || '#94a3b8';
-      var pos = getZoneRect(zone);
+      var pos = getZoneRect({
+        side: zone.side,
+        position: zone._renderPos !== undefined ? zone._renderPos : zone.position,
+        span: zone._renderSpan !== undefined ? zone._renderSpan : zone.span
+      });
 
       // Zone background
       var rect = document.createElementNS(SVG_NS, 'rect');
@@ -380,22 +399,40 @@ GroceryGPS.storeMap = (function () {
     var stops = routeResult.stops;
     if (stops.length < 2) return;
 
-    // Build the path
+    // Build the path. Use Manhattan (right-angle) routing along a south
+    // walkway so the line follows realistic shopping paths instead of
+    // cutting diagonally through aisles.
     var points = stops.map(function (stop) {
       return toSVGCoords(stop.position);
     });
 
-    // Create smooth path using quadratic curves
+    // The "main walkway" sits just below the aisle bars, inside the south wall.
+    var walkY = STORE_Y + STORE_H * 0.95;
+
     var d = 'M ' + points[0].x + ' ' + points[0].y;
 
     for (var i = 1; i < points.length; i++) {
-      if (i < points.length - 1) {
-        // Smooth curve through midpoints
-        var midX = (points[i].x + points[i + 1].x) / 2;
-        var midY = (points[i].y + points[i + 1].y) / 2;
-        d += ' Q ' + points[i].x + ' ' + points[i].y + ' ' + midX + ' ' + midY;
+      var prev = points[i - 1];
+      var next = points[i];
+      var prevOnWalk = Math.abs(prev.y - walkY) <= 2;
+      var nextOnWalk = Math.abs(next.y - walkY) <= 2;
+
+      if (prevOnWalk && nextOnWalk) {
+        // Both on walkway — simple horizontal line
+        d += ' L ' + next.x + ' ' + next.y;
+      } else if (prevOnWalk) {
+        // On walkway → walk to next.x → rise up to next stop
+        d += ' L ' + next.x + ' ' + walkY;
+        d += ' L ' + next.x + ' ' + next.y;
+      } else if (nextOnWalk) {
+        // Drop to walkway → walk to next.x
+        d += ' L ' + prev.x + ' ' + walkY;
+        d += ' L ' + next.x + ' ' + next.y;
       } else {
-        d += ' L ' + points[i].x + ' ' + points[i].y;
+        // Both off walkway — drop, traverse, rise (3 segments)
+        d += ' L ' + prev.x + ' ' + walkY;
+        d += ' L ' + next.x + ' ' + walkY;
+        d += ' L ' + next.x + ' ' + next.y;
       }
     }
 

@@ -80,6 +80,85 @@ GroceryGPS.listInput = (function () {
   //  TYPE INPUT
   // =====================
 
+  // =====================
+  //  AUTOCOMPLETE SUGGESTIONS
+  // =====================
+
+  function getSuggestionPool() {
+    var pool = {};
+    // Built-in dictionary keys
+    var dict = (GroceryGPS.categories && GroceryGPS.categories.DICTIONARY) || {};
+    Object.keys(dict).forEach(function (k) { pool[k.toLowerCase()] = true; });
+    // History from previously added items across all lists
+    try {
+      var lists = GroceryGPS.storage.listLists();
+      lists.forEach(function (l) {
+        (l.items || []).forEach(function (it) {
+          if (it && it.name) pool[it.name.toLowerCase()] = true;
+        });
+      });
+    } catch (e) {}
+    return Object.keys(pool);
+  }
+
+  function updateSuggestions(value) {
+    var box = document.getElementById('item-suggestions');
+    if (!box) return;
+    var q = (value || '').trim().toLowerCase();
+    if (!q) { box.classList.add('hidden'); box.innerHTML = ''; return; }
+
+    var pool = getSuggestionPool();
+    var existing = {};
+    currentItems.forEach(function (it) { existing[it.name.toLowerCase()] = true; });
+
+    // Rank: prefix matches first, then contains
+    var prefix = [];
+    var contains = [];
+    pool.forEach(function (name) {
+      if (existing[name]) return;
+      var idx = name.indexOf(q);
+      if (idx === 0) prefix.push(name);
+      else if (idx > 0) contains.push(name);
+    });
+    prefix.sort();
+    contains.sort();
+    var matches = prefix.concat(contains).slice(0, 6);
+
+    if (matches.length === 0) {
+      box.classList.add('hidden');
+      box.innerHTML = '';
+      return;
+    }
+
+    // Look up the active store to show aisle hints
+    var storeId = GroceryGPS.storage.getActiveStoreId();
+    var storeData = storeId ? GroceryGPS.storage.loadStore(storeId) : null;
+
+    box.innerHTML = matches.map(function (name) {
+      var display = name.charAt(0).toUpperCase() + name.slice(1);
+      var safe = GroceryGPS.app.escapeHtml(display);
+      // Show which aisle this item would go to
+      var hint = '';
+      if (storeData && GroceryGPS.categories) {
+        var m = GroceryGPS.categories.matchItem(name, storeData);
+        if (m && m.stopLabel) hint = '<span style="opacity:0.5;font-size:0.8rem;margin-left:auto;">' + GroceryGPS.app.escapeHtml(m.stopLabel) + '</span>';
+      }
+      return '<button type="button" class="item-suggestion" data-name="' +
+        safe.replace(/"/g, '&quot;') + '" onclick="GroceryGPS.listInput.pickSuggestion(this.dataset.name)">' +
+        '<span class="suggestion-plus">+</span>' + safe + hint +
+        '</button>';
+    }).join('');
+    box.classList.remove('hidden');
+  }
+
+  function pickSuggestion(name) {
+    addItemByName(name);
+    var input = document.getElementById('item-input');
+    if (input) { input.value = ''; input.focus(); }
+    var box = document.getElementById('item-suggestions');
+    if (box) { box.classList.add('hidden'); box.innerHTML = ''; }
+  }
+
   function addItem() {
     var input = document.getElementById('item-input');
     if (!input) return;
@@ -89,6 +168,8 @@ GroceryGPS.listInput = (function () {
     addItemByName(value);
     input.value = '';
     input.focus();
+    var box = document.getElementById('item-suggestions');
+    if (box) { box.classList.add('hidden'); box.innerHTML = ''; }
   }
 
   function addItemByName(name) {
@@ -527,7 +608,13 @@ GroceryGPS.listInput = (function () {
 
       var locationLabel = '';
       if (item.matched && item.stopLabel) {
-        locationLabel = '<span class="list-item-location">' + GroceryGPS.app.escapeHtml(item.stopLabel) + '</span>';
+        // Tap to correct the assigned location — the picker saves the
+        // change as a learned correction so future trips remember it.
+        locationLabel =
+          '<span class="list-item-location list-item-location--editable" ' +
+            'onclick="event.stopPropagation();GroceryGPS.listInput.showAislePicker(' + origIndex + ')">' +
+            GroceryGPS.app.escapeHtml(item.stopLabel) + ' · edit' +
+          '</span>';
       } else if (!item.matched) {
         locationLabel = '<span class="list-item-location list-item-location--unmatched" onclick="event.stopPropagation();GroceryGPS.listInput.showAislePicker(' + origIndex + ')">Tap to assign aisle →</span>';
       }
@@ -599,6 +686,8 @@ GroceryGPS.listInput = (function () {
     showAislePicker: showAislePicker,
     hideAislePicker: hideAislePicker,
     assignAisle: assignAisle,
+    updateSuggestions: updateSuggestions,
+    pickSuggestion: pickSuggestion,
     getItems: function () { return currentItems; }
   };
 

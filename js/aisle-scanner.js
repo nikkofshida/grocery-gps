@@ -426,17 +426,27 @@ GroceryGPS.aisleScanner = (function () {
       var store = storeId ? GroceryGPS.storage.loadStore(storeId) : null;
 
       if (store) {
-        var newAisle = {
-          id: 'aisle-' + currentAisleNumber,
-          number: currentAisleNumber,
-          label: 'Aisle ' + currentAisleNumber,
-          categories: scannedCategories,
-          gridRow: 0,
-          gridCol: (store.aisles || []).length
-        };
-
         store.aisles = store.aisles || [];
-        store.aisles.push(newAisle);
+
+        // If an aisle with this number already exists, update it instead of duplicating.
+        var existing = store.aisles.find(function (a) {
+          return a.number === currentAisleNumber;
+        });
+
+        if (existing) {
+          existing.categories = scannedCategories;
+          existing.label = 'Aisle ' + currentAisleNumber;
+        } else {
+          store.aisles.push({
+            id: 'aisle-' + currentAisleNumber,
+            number: currentAisleNumber,
+            label: 'Aisle ' + currentAisleNumber,
+            categories: scannedCategories,
+            gridRow: 0,
+            gridCol: store.aisles.length
+          });
+        }
+
         store.layout = store.layout || {};
         store.layout.aisleCols = store.aisles.length;
 

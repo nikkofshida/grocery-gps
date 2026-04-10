@@ -244,7 +244,81 @@ GroceryGPS.categories = (function () {
 
     // --- PET ---
     'dog food': 'Health', 'cat food': 'Health', 'cat litter': 'Health',
-    'pet food': 'Health', 'dog treats': 'Health'
+    'pet food': 'Health', 'dog treats': 'Health',
+
+    // --- SYNONYMS / EVERYDAY NAMES ---
+    // These cover common items that aren't worded the way an aisle sign is.
+    'bun': 'Bread', 'buns': 'Bread',
+    'hamburger bun': 'Bread', 'hamburger buns': 'Bread',
+    'hot dog bun': 'Bread', 'hot dog buns': 'Bread',
+    'brioche bun': 'Bread', 'brioche buns': 'Bread',
+    'slider bun': 'Bread', 'slider buns': 'Bread',
+    'dinner roll': 'Bread', 'dinner rolls': 'Bread',
+    'sub roll': 'Bread', 'sub rolls': 'Bread',
+    'hoagie roll': 'Bread', 'hoagie': 'Bread',
+    'rolls': 'Bread', 'roll': 'Bread',
+    'noodle': 'Pasta', 'noodles': 'Pasta',
+    'spaghetti noodles': 'Pasta', 'rice noodles': 'Pasta',
+    'udon': 'International Foods', 'soba': 'International Foods',
+    'rice paper': 'International Foods', 'wonton wrappers': 'International Foods',
+    'gochujang': 'International Foods', 'gochugaru': 'International Foods',
+    'chili crisp': 'International Foods', 'chili oil': 'International Foods',
+    'fish sauce': 'International Foods', 'oyster sauce': 'International Foods',
+    'hoisin': 'International Foods', 'hoisin sauce': 'International Foods',
+    'rice vinegar': 'International Foods', 'mirin': 'International Foods',
+    'sake': 'International Foods', 'miso': 'International Foods',
+    'kimchi': 'International Foods', 'tahini': 'International Foods',
+    'harissa': 'International Foods', 'curry powder': 'International Foods',
+    'nori': 'International Foods', 'sesame oil': 'International Foods',
+    'sushi rice': 'Rice', 'arborio rice': 'Rice',
+    'tofu': 'International Foods', 'tempeh': 'International Foods',
+    'edamame': 'Frozen Vegetables',
+    'plant milk': 'Milk', 'lactaid': 'Milk',
+    'cold cuts': 'Deli Meats', 'lunchmeat': 'Deli Meats',
+    'avocado oil': 'Oils', 'sesame seeds': 'Spices',
+    'protein powder': 'Vitamins',
+    'paper towel': 'Paper Products', 'tp': 'Paper Products',
+    'qtips': 'Personal Care', 'q-tips': 'Personal Care', 'cotton swabs': 'Personal Care'
+  };
+
+  // ===========================================
+  //  CATEGORY KEYWORD BAGS
+  //  When a word isn't in the dictionary, we
+  //  fall back to matching the user's store's
+  //  actual aisle/zone category names against
+  //  these expanded keyword bags. Example:
+  //  if a store has an aisle category "Bread",
+  //  any of these words → that aisle.
+  // ===========================================
+
+  var CATEGORY_KEYWORDS = {
+    'bread':       ['bun','buns','roll','rolls','bagel','bagels','baguette','sourdough','brioche','ciabatta','pita','naan','tortilla','tortillas','english muffin','sliced bread','hoagie','sub'],
+    'bakery':      ['bun','buns','roll','rolls','bagel','baguette','croissant','danish','muffin','cake','cupcake','pastry','pastries','pie','donut','doughnut'],
+    'pasta':       ['noodle','noodles','spaghetti','penne','rigatoni','linguine','fettuccine','macaroni','rotini','elbow','angel hair','lasagna','orzo'],
+    'rice':        ['rice','jasmine','basmati','arborio','sushi rice','wild rice','brown rice'],
+    'produce':     ['apple','banana','orange','grape','strawberry','lettuce','tomato','onion','potato','carrot','broccoli','spinach','kale','avocado','pepper','cucumber','herbs','cilantro','basil','garlic','ginger','lemon','lime'],
+    'fruits':      ['apple','banana','orange','grape','berry','berries','melon','pear','peach','plum','mango','kiwi','pineapple','cherry','cherries'],
+    'vegetables':  ['lettuce','tomato','onion','potato','carrot','broccoli','spinach','kale','pepper','cucumber','garlic','squash','zucchini','cabbage','celery','mushroom','mushrooms'],
+    'dairy':       ['milk','cheese','yogurt','butter','cream','sour cream','cottage cheese','half and half','creamer','eggs','egg'],
+    'meat':        ['chicken','beef','steak','pork','bacon','sausage','ground beef','ground turkey','turkey','lamb','ribs','brisket'],
+    'seafood':     ['salmon','shrimp','tuna','cod','tilapia','crab','lobster','scallops','fish','halibut'],
+    'deli':        ['salami','ham','turkey','prosciutto','pepperoni','cold cuts','lunch meat','sliced'],
+    'cereal':      ['cereal','granola','oatmeal','oats','bran','muesli','cornflakes','cheerios'],
+    'snacks':      ['chips','pretzels','popcorn','nuts','almonds','cashews','peanuts','jerky','trail mix','crackers','goldfish'],
+    'candy':       ['candy','chocolate','gum','mints','gummy','licorice','snickers','m&m','kit kat'],
+    'beverages':   ['water','soda','juice','tea','coffee','sparkling','seltzer','lemonade','energy drink','sports drink','gatorade','kombucha','beer','wine'],
+    'frozen':      ['frozen','ice cream','popsicle','sorbet','frozen pizza','frozen meal','tv dinner'],
+    'condiments':  ['ketchup','mustard','mayo','mayonnaise','hot sauce','bbq','relish','pickles','olives','dressing'],
+    'oils':        ['oil','olive oil','canola','vegetable oil','coconut oil','avocado oil','sesame oil','cooking spray'],
+    'spices':      ['salt','pepper','cinnamon','cumin','paprika','garlic powder','seasoning','italian seasoning','chili powder','oregano'],
+    'baking':      ['flour','sugar','brown sugar','baking soda','baking powder','vanilla','yeast','chocolate chips','cocoa','cake mix','frosting','sprinkles','cornstarch'],
+    'international': ['soy sauce','sriracha','salsa','tortilla chips','curry','coconut milk','miso','kimchi','gochujang','chili crisp','chili oil','tahini','hoisin','fish sauce','oyster sauce','rice vinegar','sesame','tofu','tempeh','wasabi','nori','udon','soba','wonton'],
+    'paper':       ['paper towels','toilet paper','tissues','napkins','paper plates','tp'],
+    'cleaning':    ['dish soap','bleach','windex','clorox','lysol','sponge','sponges','all purpose','cleaner','disinfectant'],
+    'laundry':     ['detergent','dryer sheets','fabric softener','stain remover','bleach'],
+    'health':      ['tylenol','advil','ibuprofen','aspirin','cough','cold medicine','bandaid','band-aid','first aid','vitamin','vitamins','probiotic'],
+    'personal care': ['shampoo','conditioner','body wash','soap','deodorant','lotion','toothpaste','toothbrush','floss','razor','sunscreen','q-tips','cotton swabs'],
+    'baby':        ['diaper','diapers','baby food','baby wipes','formula','baby']
   };
 
 
@@ -366,6 +440,22 @@ GroceryGPS.categories = (function () {
   function matchItem(itemName, storeData) {
     var match = matchCategory(itemName);
     if (!match) {
+      // Last resort: try keyword-bag matching directly against the store's
+      // aisle/zone categories. This covers items like "buns" that aren't in
+      // the dictionary but ARE in a keyword bag for "Bread".
+      var kbResult = keywordBagResolve(itemName, storeData);
+      if (kbResult) {
+        return {
+          name: itemName,
+          category: kbResult.stopLabel,
+          stopId: kbResult.stopId,
+          stopLabel: kbResult.stopLabel,
+          stopType: kbResult.stopType,
+          confidence: 0.6,
+          matched: true,
+          source: 'keyword-bag'
+        };
+      }
       return {
         name: itemName,
         category: null,
@@ -378,6 +468,15 @@ GroceryGPS.categories = (function () {
 
     var location = resolveLocation(match.category, storeData);
 
+    // If the dictionary matched a category but we couldn't resolve it to a
+    // specific aisle/zone in this store, try the keyword-bag fallback.
+    // Example: dictionary says "buns" → "Bread", but the store has no aisle
+    // with category "Bread" — however it has an aisle labelled "Bakery"
+    // whose keyword bag includes "buns".
+    if (!location && storeData) {
+      location = keywordBagResolve(itemName, storeData);
+    }
+
     return {
       name: itemName,
       category: match.category,
@@ -388,6 +487,70 @@ GroceryGPS.categories = (function () {
       matched: !!location,
       source: match.source
     };
+  }
+
+  /**
+   * Keyword-bag fallback: for each aisle/zone category name in the store,
+   * look up its CATEGORY_KEYWORDS bag and check if the user's item appears.
+   */
+  function keywordBagResolve(itemName, storeData) {
+    if (!itemName || !storeData) return null;
+    var normalized = itemName.toLowerCase().trim();
+    var words = normalized.split(/\s+/);
+
+    // Build list of all stops with their categories
+    var candidates = [];
+    (storeData.aisles || []).forEach(function (aisle) {
+      (aisle.categories || []).forEach(function (cat) {
+        candidates.push({
+          catName: cat,
+          stopId: aisle.id,
+          stopLabel: aisle.label || ('Aisle ' + aisle.number),
+          stopType: 'aisle'
+        });
+      });
+    });
+    (storeData.zones || []).forEach(function (zone) {
+      (zone.categories || []).forEach(function (cat) {
+        candidates.push({
+          catName: cat,
+          stopId: zone.id,
+          stopLabel: zone.name,
+          stopType: 'zone'
+        });
+      });
+    });
+
+    // For each candidate, check if item matches its keyword bag
+    for (var i = 0; i < candidates.length; i++) {
+      var catLower = candidates[i].catName.toLowerCase().trim();
+      var bag = CATEGORY_KEYWORDS[catLower];
+      if (!bag) continue;
+
+      // Check if the full item string or any of its words appear in the bag
+      for (var j = 0; j < bag.length; j++) {
+        if (normalized === bag[j] || normalized.indexOf(bag[j]) !== -1 || bag[j].indexOf(normalized) !== -1) {
+          return {
+            stopId: candidates[i].stopId,
+            stopLabel: candidates[i].stopLabel,
+            stopType: candidates[i].stopType
+          };
+        }
+      }
+      // Also check individual words (e.g. "brioche buns" → word "buns" in bread bag)
+      for (var w = 0; w < words.length; w++) {
+        if (words[w].length < 3) continue;
+        if (bag.indexOf(words[w]) !== -1) {
+          return {
+            stopId: candidates[i].stopId,
+            stopLabel: candidates[i].stopLabel,
+            stopType: candidates[i].stopType
+          };
+        }
+      }
+    }
+
+    return null;
   }
 
 

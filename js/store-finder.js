@@ -275,7 +275,7 @@ GroceryGPS.storeFinder = (function () {
                '</div>';
       } else {
         html = '<div class="empty-state" style="padding:24px 0;">' +
-                 '<div class="empty-state-desc">No grocery stores found within 8 km.</div>' +
+                 '<div class="empty-state-desc">No grocery stores found nearby.</div>' +
                '</div>';
       }
     }
@@ -287,9 +287,9 @@ GroceryGPS.storeFinder = (function () {
   }
 
   function renderStoreRow(opts) {
-    var distText = opts.distance !== null && opts.distance !== undefined
-      ? (opts.distance < 1
-          ? (opts.distance * 1000).toFixed(0) + ' m'
+    var distText = (opts.distance !== null && opts.distance !== undefined)
+      ? (GroceryGPS.settings && GroceryGPS.settings.formatDistance
+          ? GroceryGPS.settings.formatDistance(opts.distance)
           : opts.distance.toFixed(1) + ' km')
       : '';
 

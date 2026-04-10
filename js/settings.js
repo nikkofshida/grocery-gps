@@ -10,8 +10,28 @@ var GroceryGPS = GroceryGPS || {};
 GroceryGPS.settings = (function () {
 
   var KEYS = {
-    OPENAI_KEY: 'grocerygps_openai_key'
+    OPENAI_KEY: 'grocerygps_openai_key',
+    DISTANCE_UNIT: 'grocerygps_distance_unit'
   };
+
+  function getDistanceUnit() {
+    return localStorage.getItem(KEYS.DISTANCE_UNIT) || 'imperial';
+  }
+
+  function setDistanceUnit(unit) {
+    localStorage.setItem(KEYS.DISTANCE_UNIT, unit === 'metric' ? 'metric' : 'imperial');
+  }
+
+  // km -> human-readable string based on user preference
+  function formatDistance(km) {
+    if (km === null || km === undefined || isNaN(km)) return '';
+    if (getDistanceUnit() === 'metric') {
+      return km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km';
+    }
+    var miles = km * 0.621371;
+    if (miles < 0.1) return Math.round(miles * 5280) + ' ft';
+    return miles.toFixed(1) + ' mi';
+  }
 
   function getOpenAIKey() {
     return localStorage.getItem(KEYS.OPENAI_KEY) || '';
@@ -125,7 +145,10 @@ GroceryGPS.settings = (function () {
     renderSettings: renderSettings,
     onKeyInputFocus: onKeyInputFocus,
     saveKey: saveKey,
-    removeKey: removeKey
+    removeKey: removeKey,
+    getDistanceUnit: getDistanceUnit,
+    setDistanceUnit: setDistanceUnit,
+    formatDistance: formatDistance
   };
 
 })();

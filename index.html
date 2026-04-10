@@ -414,6 +414,8 @@
       <div class="quick-add-area">
         <input type="text" class="quick-add-input" id="item-input"
           placeholder="Add an item..."
+          autocomplete="off"
+          oninput="GroceryGPS.listInput.updateSuggestions(this.value)"
           onkeydown="if(event.key==='Enter'){GroceryGPS.listInput.addItem();event.preventDefault();}">
         <button class="quick-add-submit" onclick="GroceryGPS.listInput.addItem()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -421,6 +423,7 @@
           </svg>
         </button>
       </div>
+      <div id="item-suggestions" class="item-suggestions hidden"></div>
       <button class="btn btn-ghost mt-2 text-sm" onclick="GroceryGPS.listInput.showPasteSheet()">
         Paste from Notes
       </button>
